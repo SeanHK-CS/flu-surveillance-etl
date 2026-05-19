@@ -2,8 +2,6 @@
 
 Python pipeline: **fetch public health data → store raw → clean → CSV files for Power BI**.
 
-Archived previous version: [`V1 (AI SLOP)/`](V1%20(AI%20SLOP)/) (do not use).
-
 ## Flow
 
 ```
