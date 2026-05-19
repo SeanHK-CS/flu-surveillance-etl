@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+
+# Data — raw and full curated stay local; samples are committed for demo
+data/raw/**/*
+data/curated/*.csv
+!data/raw/.gitkeep
+!data/curated/.gitkeep
+!data/samples/
+!data/samples/**
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Power BI (optional: commit .pbix if you want)
+# *.pbix
+
+# Archive (keep local; omit from public GitHub if desired)
+# V1 (AI SLOP)/

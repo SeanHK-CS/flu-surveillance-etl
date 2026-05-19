@@ -1,0 +1,31 @@
+# Core Python Libraries
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Data Extraction
+requests>=2.31.0
+urllib3>=2.0.0
+pytrends>=4.9.2  # Google Trends API
+
+# Database Connectivity
+SQLAlchemy>=2.0.0
+psycopg2-binary>=2.9.0  # PostgreSQL adapter
+pyodbc>=4.0.39  # SQL Server adapter (if needed)
+google-cloud-bigquery>=3.11.0  # BigQuery adapter (optional)
+
+# Apache Airflow
+apache-airflow>=2.7.0
+apache-airflow-providers-postgres>=5.7.0
+apache-airflow-providers-http>=4.5.0
+
+# Data Processing
+python-dateutil>=2.8.2
+pytz>=2023.3
+
+# Utilities
+python-dotenv>=1.0.0  # Environment variable management
+loguru>=0.7.0  # Enhanced logging
+
+# Testing (optional)
+pytest>=7.4.0
+pytest-cov>=4.1.0
