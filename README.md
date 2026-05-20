@@ -2,7 +2,44 @@
 
 Python pipeline: **fetch public health data → store raw → clean → CSV files for Power BI**.
 
-**Archive:** The original AI-generated project (Airflow, star schema, Google Trends) lives on branch [`archive/v1-ai-slop`](https://github.com/SeanHK-CS/flu-surveillance-etl/tree/archive/v1-ai-slop). **`main`** is the clean V2 pipeline only.
+Repo: https://github.com/SeanHK-CS/flu-surveillance-etl
+
+**Optional DE extension:** PostgreSQL star schema + Airflow on branch [`feature/de-warehouse`](https://github.com/SeanHK-CS/flu-surveillance-etl/tree/feature/de-warehouse).
+
+**Archive:** Original AI-generated project on [`archive/v1-ai-slop`](https://github.com/SeanHK-CS/flu-surveillance-etl/tree/archive/v1-ai-slop).
+
+## Quick start (fork this repo)
+
+### Path A — No API calls (≈1 minute)
+
+```powershell
+git clone https://github.com/SeanHK-CS/flu-surveillance-etl.git
+cd flu-surveillance-etl
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+python scripts/use_samples.py
+python scripts/validate_curated.py
+```
+
+Import `data/curated/*.csv` in Power BI.
+
+### Path B — Full live pipeline (≈1–2 minutes)
+
+Requires internet:
+
+```powershell
+git clone https://github.com/SeanHK-CS/flu-surveillance-etl.git
+cd flu-surveillance-etl
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+copy .env.example .env
+.\run_pipeline.ps1
+python scripts/smoke_test.py
+```
+
+Mac/Linux: `./run_pipeline.sh` then `python scripts/smoke_test.py`
 
 ## Flow
 
@@ -15,52 +52,18 @@ HHS CSV  ──► data/raw/hhs/     ──┘
 ## Prerequisites
 
 - Python 3.10+
-- Internet access (for full pipeline run)
-- [Power BI Desktop](https://powerbi.microsoft.com/desktop/) (optional, for dashboards)
+- Internet (Path B)
+- [Power BI Desktop](https://powerbi.microsoft.com/desktop/) (optional)
 
-## Setup
+## Outputs
 
-```powershell
-git clone <your-repo-url>
-cd disease-trends
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1   # Mac/Linux: source .venv/bin/activate
-pip install -r requirements.txt
-copy .env.example .env         # optional
-```
+| File | Typical size | Use |
+|------|----------------|-----|
+| `data/curated/flu_weekly.csv` | ~115 rows | Weekly ILI % by state |
+| `data/curated/hospital_daily.csv` | ~25,000 rows | Daily hospital utilization |
+| `data/samples/*_sample.csv` | ≤100 rows | Offline demo (Path A) |
 
-## Run pipeline
-
-```powershell
-.\run_pipeline.ps1
-```
-
-Mac/Linux:
-
-```bash
-chmod +x run_pipeline.sh
-./run_pipeline.sh
-```
-
-Or step by step:
-
-```powershell
-python -m ingest.fetch_cdc
-python -m ingest.fetch_hhs
-python -m transform.build_curated
-python scripts/validate_curated.py
-```
-
-## Outputs for analysts
-
-| File | Rows (typical) | Power BI |
-|------|----------------|----------|
-| `data/curated/flu_weekly.csv` | ~115 | Weekly ILI % by state |
-| `data/curated/hospital_daily.csv` | ~25,000 | Daily hospital utilization |
-| `data/samples/*_sample.csv` | ≤100 each | Quick demo without API calls |
-
-**Column definitions:** [`data/DATA_DICTIONARY.md`](data/DATA_DICTIONARY.md)  
-**Power BI dashboard:** [`powerbi/BUILD_GUIDE.md`](powerbi/BUILD_GUIDE.md) (4 pages + sample data in `powerbi/data/`)
+**Dictionary:** [`data/DATA_DICTIONARY.md`](data/DATA_DICTIONARY.md)
 
 ## Config (`.env`)
 
@@ -72,21 +75,19 @@ python scripts/validate_curated.py
 
 ## Data sources & caveats
 
-- **CDC FluView** — Weekly outpatient ILI surveillance ([API docs](https://cmu-delphi.github.io/delphi-epidata/api/fluview.html))
-- **HHS hospital capacity** — COVID-era state hospital metrics; **reporting ended May 2024** ([dataset](https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/g62h-syeh))
+- **CDC FluView** — Weekly outpatient ILI ([API](https://cmu-delphi.github.io/delphi-epidata/api/fluview.html))
+- **HHS hospital capacity** — COVID-era metrics; **reporting ended May 2024** ([dataset](https://healthdata.gov/Hospital/COVID-19-Reported-Patient-Impact-and-Hospital-Capa/g62h-syeh))
 
-Flu and hospital files may cover **different date ranges**. Use separate report pages in Power BI.
+Use separate Power BI pages for weekly flu vs daily hospital data.
 
 ## Project structure
 
 ```
 ├── ingest/           # fetch_cdc.py, fetch_hhs.py
 ├── transform/        # build_curated.py
-├── scripts/          # validate_curated.py
-├── data/raw/         # bronze (gitignored)
-├── data/curated/     # gold CSVs (gitignored; regenerate locally)
-├── data/samples/     # small demo files (committed)
-├── powerbi/
+├── scripts/          # validate_curated.py, smoke_test.py, use_samples.py
+├── data/samples/     # committed demo CSVs
+├── data/raw|curated/ # gitignored; created by pipeline
 └── run_pipeline.ps1
 ```
 
@@ -94,7 +95,15 @@ Flu and hospital files may cover **different date ranges**. Use separate report 
 
 | Problem | Fix |
 |---------|-----|
-| CDC API error | Check `FLUVIEW_EPIWEEKS` format; use `202448-202518` |
+| CDC API error | Check `FLUVIEW_EPIWEEKS`; use `202448-202518` |
 | HHS timeout | Lower `HHS_ROW_LIMIT` in `.env` |
-| No curated files | Run `python scripts/validate_curated.py` after pipeline |
-| Power BI only | Import `data/samples/*.csv` — no pipeline needed |
+| No curated files | Run `.\run_pipeline.ps1` or `python scripts/use_samples.py` |
+| Postgres / warehouse | `git checkout feature/de-warehouse` — see `docs/DE_WAREHOUSE.md` |
+
+## Verify
+
+```powershell
+python scripts/smoke_test.py
+```
+
+Expected: `CSV SMOKE TEST PASSED`.
