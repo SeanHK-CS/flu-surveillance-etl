@@ -40,12 +40,25 @@ def epiweek_to_date(epiweek: int) -> pd.Timestamp:
     return pd.to_datetime(f"{year}-W{week:02d}-6", format="%G-W%V-%u")
 
 
+def _sample_for_demo(df: pd.DataFrame, max_rows: int = 100) -> pd.DataFrame:
+    """Spread rows across states so offline samples are useful in Power BI."""
+    if "state" not in df.columns or df["state"].nunique() <= 1:
+        return df.head(max_rows)
+    per_state = max(5, max_rows // df["state"].nunique())
+    return (
+        df.groupby("state", group_keys=False)
+        .head(per_state)
+        .head(max_rows)
+    )
+
+
 def _write_csv(df: pd.DataFrame, dest: Path, sample_name: str) -> None:
     df.to_csv(dest, index=False, date_format="%Y-%m-%d")
     sample_path = SAMPLES_DIR / sample_name
-    df.head(min(100, len(df))).to_csv(sample_path, index=False, date_format="%Y-%m-%d")
+    _sample_for_demo(df).to_csv(sample_path, index=False, date_format="%Y-%m-%d")
     print(f"Wrote {len(df)} rows -> {dest}")
-    print(f"  sample ({min(100, len(df))} rows) -> {sample_path}")
+    n = len(pd.read_csv(sample_path))
+    print(f"  sample ({n} rows) -> {sample_path}")
 
 
 def build_flu_weekly() -> pd.DataFrame:
@@ -99,6 +112,13 @@ def build_hospital_daily() -> pd.DataFrame:
     ]:
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors="coerce")
+
+    for col in (
+        "staffed_icu_adult_patients_confirmed_and_suspected_covid",
+        "previous_day_admission_adult_covid_suspected",
+    ):
+        if col in df.columns:
+            df[col] = df[col].fillna(0)
 
     if "inpatient_beds" in df.columns and "inpatient_beds_used" in df.columns:
         df["bed_utilization_pct"] = (
