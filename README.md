@@ -2,7 +2,9 @@
 
 Python pipeline: **fetch public health data → store raw → clean → CSV files for Power BI**.
 
-**Archive:** The original AI-generated project (Airflow, star schema, Google Trends) lives on branch [`archive/v1-ai-slop`](https://github.com/SeanHK-CS/flu-surveillance-etl/tree/archive/v1-ai-slop). **`main`** is the clean V2 pipeline only.
+**Archive:** The original AI-generated project lives on branch [`archive/v1-ai-slop`](https://github.com/SeanHK-CS/flu-surveillance-etl/tree/archive/v1-ai-slop).
+
+**This branch (`feature/de-warehouse`):** PostgreSQL star schema + Airflow — see [`docs/DE_WAREHOUSE.md`](docs/DE_WAREHOUSE.md). **`main`** stays the simple CSV + Power BI path.
 
 ## Flow
 
