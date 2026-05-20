@@ -2,6 +2,8 @@
 
 Python pipeline: **fetch public health data → store raw → clean → CSV files for Power BI**.
 
+**Archive:** The original AI-generated project (Airflow, star schema, Google Trends) lives on branch [`archive/v1-ai-slop`](https://github.com/SeanHK-CS/flu-surveillance-etl/tree/archive/v1-ai-slop). **`main`** is the clean V2 pipeline only.
+
 ## Flow
 
 ```
@@ -58,7 +60,7 @@ python scripts/validate_curated.py
 | `data/samples/*_sample.csv` | ≤100 each | Quick demo without API calls |
 
 **Column definitions:** [`data/DATA_DICTIONARY.md`](data/DATA_DICTIONARY.md)  
-**Power BI steps:** [`powerbi/README.md`](powerbi/README.md)
+**Power BI dashboard:** [`powerbi/BUILD_GUIDE.md`](powerbi/BUILD_GUIDE.md) (4 pages + sample data in `powerbi/data/`)
 
 ## Config (`.env`)
 
