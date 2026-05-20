@@ -43,7 +43,19 @@ def load_staging(engine) -> None:
     flu = pd.read_csv(flu_path)
     hosp = pd.read_csv(hosp_path)
     flu["week_ending"] = pd.to_datetime(flu["week_ending"]).dt.date
+    flu["epiweek"] = pd.to_numeric(flu["epiweek"], errors="coerce").astype("Int64")
     hosp["report_date"] = pd.to_datetime(hosp["report_date"]).dt.date
+
+    # Staging tables match warehouse grain (extra CSV columns stay in curated files only)
+    hosp = hosp[
+        [
+            "report_date",
+            "state",
+            "inpatient_beds",
+            "inpatient_beds_used",
+            "bed_utilization_pct",
+        ]
+    ]
 
     with engine.begin() as conn:
         conn.execute(text("TRUNCATE staging.stg_flu_weekly"))

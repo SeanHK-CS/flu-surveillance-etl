@@ -18,7 +18,7 @@ python -m transform.build_curated
 Write-Host "`n=== 4/5 Postgres warehouse ===" -ForegroundColor Cyan
 python -m load.load_warehouse
 
-Write-Host "`n=== 5/5 Validate CSVs ===" -ForegroundColor Cyan
-python scripts/validate_curated.py
+Write-Host "`n=== 5/5 Smoke test (CSV + warehouse) ===" -ForegroundColor Cyan
+python scripts/smoke_test.py --warehouse
 
 Write-Host "`nDone. CSVs in data/curated; views in analytics.*" -ForegroundColor Green

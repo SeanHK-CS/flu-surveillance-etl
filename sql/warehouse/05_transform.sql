@@ -11,7 +11,7 @@ INSERT INTO dimensions.dim_date (date_id, full_date, epiweek, year, month)
 SELECT DISTINCT
     CAST(TO_CHAR(week_ending, 'YYYYMMDD') AS INTEGER),
     week_ending,
-    epiweek,
+    CAST(epiweek AS INTEGER),
     EXTRACT(YEAR FROM week_ending)::INTEGER,
     EXTRACT(MONTH FROM week_ending)::INTEGER
 FROM staging.stg_flu_weekly
@@ -22,7 +22,7 @@ INSERT INTO dimensions.dim_date (date_id, full_date, epiweek, year, month)
 SELECT DISTINCT
     CAST(TO_CHAR(report_date, 'YYYYMMDD') AS INTEGER),
     report_date,
-    NULL,
+    CAST(NULL AS INTEGER),
     EXTRACT(YEAR FROM report_date)::INTEGER,
     EXTRACT(MONTH FROM report_date)::INTEGER
 FROM staging.stg_hospital_daily

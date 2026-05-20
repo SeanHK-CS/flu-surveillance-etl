@@ -18,10 +18,20 @@ CDC / HHS APIs
 ## Setup
 
 ```powershell
+git checkout feature/de-warehouse
 pip install -r requirements.txt
-.\docker\start_postgres.ps1
-$env:POSTGRES_URL = "postgresql://postgres:fluwarehouse123@localhost:5432/flu_warehouse"
+.\docker\start_postgres.ps1   # sets POSTGRES_URL; requires Docker Desktop
 .\run_pipeline_warehouse.ps1
+python scripts/smoke_test.py --warehouse
+```
+
+Mac/Linux:
+
+```bash
+chmod +x docker/start_postgres.sh run_pipeline_warehouse.sh
+./docker/start_postgres.sh
+export POSTGRES_URL="postgresql://postgres:fluwarehouse123@localhost:5432/flu_warehouse"
+./run_pipeline_warehouse.sh
 ```
 
 ## Star schema
