@@ -14,7 +14,6 @@ from pathlib import Path
 
 import pandas as pd
 from dotenv import load_dotenv
-from sqlalchemy import create_engine, text
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
@@ -34,6 +33,8 @@ def validate_csvs() -> None:
 
 
 def validate_warehouse() -> None:
+    from sqlalchemy import create_engine, text
+
     engine = create_engine(POSTGRES_URL)
     checks = {
         "analytics.flu_weekly": "SELECT COUNT(*) FROM analytics.flu_weekly",
